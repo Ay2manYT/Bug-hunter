@@ -26,7 +26,7 @@ def submit_score(name, score):
     try:
         data = {"name": name, "score": score}
         response = requests.post(f"{SERVER_URL}/highscores", json=data, timeout=2)
-        return response.status_code == 201
+        return response.status_code == 200
     except Exception:
         return False
 
@@ -53,8 +53,8 @@ def draw_score(win, score):
 
 def spawn_food(snake):
     while True:
-        y = random.randint(1, HEIGHT - 1)
-        x = random.randint(1, WIDTH - 1)
+        y = random.randint(1, HEIGHT)
+        x = random.randint(1, WIDTH)
         if (y, x) not in snake:
             return (y, x)
 
@@ -76,10 +76,7 @@ def get_new_direction(key, current_direction):
     }
 
     if key in directions:
-        new_dir = directions[key]
-        # Prevent reversing direction
-        if (new_dir[0] * -1, new_dir[1] * -1) != current_direction:
-            return new_dir
+        return directions[key]
     return current_direction
 
 
@@ -159,8 +156,8 @@ def game_loop(win):
         head_y, head_x = snake[0]
         new_head = (head_y + direction[0], head_x + direction[1])
 
-        # Check wall collision (fixed: crash when OUTSIDE bounds)
-        if new_head[0] <= 0 or new_head[0] >= HEIGHT or new_head[1] <= 0 or new_head[1] >= WIDTH:
+        # Check wall collision
+        if new_head[0] >= 1 and new_head[0] <= HEIGHT - 1 and new_head[1] >= 1 and new_head[1] <= WIDTH - 1:
             return score, False, "crashed into a wall"
 
         # Check self collision
